@@ -1,13 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import styled from 'styled-components';
 
 import CityDetails from '../../data/CityDetails';
 import CitySelection from '../CitySelection';
-
-const Container = styled.div`
-  margin: 0 auto;
-`;
+import * as styles from './styles';
 
 const mapStateToProps = state => ({
   user: state.user,
@@ -24,8 +20,8 @@ function List({ user, selected }) {
     for (let [key, value] of selected.cities) {
       cityDistance = value.distance;
 
-      if (selected.transport.has(key)) {
-        speed = selected.transport.get(key).speed;
+      if (selected.transportByCityName.has(key)) {
+        speed = selected.transportByCityName.get(key).speed;
         total += cityDistance / speed;
       }
     }
@@ -33,18 +29,29 @@ function List({ user, selected }) {
     return total;
   }
 
+  console.log('CITY', selected.cities);
+
   return (
-    <Container>
-      <h3>Please select the cities you would like to interview at.</h3>
-      <div>
-        {selected.cities.size} / {user.num_cities} Cities selected
-      </div>
+    <styles.Container>
+      <h4>Select the cities where you would like to have your interviews.</h4>
       {CityDetails.map(city => (
         <CitySelection key={city.id} city={city} />
       ))}
-      <h3>Total Time Spent Traveling</h3>
-      {calculateTotalTime()} hours
-    </Container>
+      <styles.Counter>
+        {selected.cities.size} / {user.num_cities} Cities selected
+      </styles.Counter>
+      <h4>Total Time Spent Traveling</h4>
+      <styles.TotalTimeList>
+        <li>
+          <div>One Way:</div>
+          <div>{calculateTotalTime()} hours</div>
+        </li>
+        <li>
+          <div>Round Trip:</div>
+          <div>{calculateTotalTime() * 2} hours</div>
+        </li>
+      </styles.TotalTimeList>
+    </styles.Container>
   );
 }
 

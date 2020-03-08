@@ -2,7 +2,8 @@ import {
   CHANGE_USER,
   CHANGE_CITIES_NUMBER,
   UPDATE_CITIES_SELECTED,
-  UPDATE_TRANSPORT_SELECTED
+  UPDATE_TRANSPORT_SELECTED_BY_CITY,
+  UPDATE_TRANSPORT_SELECTED_BY_TYPE
 } from './actionTypes';
 
 /* Actions for USER reducer */
@@ -22,7 +23,12 @@ export const updateSelectedCities = data => ({
   data
 });
 
-export const updateSelectedTransports = data => ({
-  type: UPDATE_TRANSPORT_SELECTED,
+export const updateSelectedTransportsByName = data => ({
+  type: UPDATE_TRANSPORT_SELECTED_BY_CITY,
+  data
+});
+
+export const updateSelectedTransportsByType = data => ({
+  type: UPDATE_TRANSPORT_SELECTED_BY_TYPE,
   data
 });

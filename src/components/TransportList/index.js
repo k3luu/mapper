@@ -3,10 +3,13 @@ import { connect } from 'react-redux';
 import styled from 'styled-components';
 
 import Transport from '../../data/Transport';
-import { updateSelectedTransports } from '../../redux/actions';
+import {
+  updateSelectedTransportsByName,
+  updateSelectedTransportsByType
+} from '../../redux/actions';
 
 const Container = styled.div`
-  background-color: blue;
+  background-color: green;
   color: white;
 `;
 
@@ -15,20 +18,34 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  updateSelectedTransports: data => updateSelectedTransports(data)
+  updateSelectedTransportsByName: data => updateSelectedTransportsByName(data),
+  updateSelectedTransportsByType: data => updateSelectedTransportsByType(data)
 };
 
-const TransportList = ({ city, selected, updateSelectedTransports }) => {
+const TransportList = ({
+  city,
+  selected,
+  updateSelectedTransportsByName,
+  updateSelectedTransportsByType
+}) => {
   function handleTransportSelect(e) {
     const value = e.target.value;
     const name = e.target.name;
 
-    let newTransportList = new Map(selected.transport);
+    let newTransportList = new Map(selected.transportByCityName);
+    let newTransportByType = new Map(selected.transportByType);
+
     let item = Transport.filter(p => p.type === value)[0];
 
     newTransportList.set(name, item);
+    newTransportByType.set(value, {
+      ...item,
+      mileageLeft: item.max_distance - city.distance,
+      city: city.name
+    });
 
-    updateSelectedTransports(newTransportList);
+    updateSelectedTransportsByName(newTransportList);
+    updateSelectedTransportsByType(newTransportByType);
   }
 
   /**
@@ -38,9 +55,24 @@ const TransportList = ({ city, selected, updateSelectedTransports }) => {
    * @return true if mode is available, false if already being used
    */
   function handleTranportAvailable(mode, cityName) {
-    let modeForCity = selected.transport.get(cityName).type;
+    let modeForCity = selected.transportByCityName.get(cityName).type;
 
-    for (let [key, value] of selected.transport) {
+    console.log(mode, cityName, modeForCity);
+
+    // if (mode === modeForCity) {
+    //   let usedByThisCity = false;
+
+    //   if (selected.transportByType.has(modeForCity)) {
+    //     usedByThisCity =
+    //       selected.transportByType.get(modeForCity).city !== cityName;
+    //   }
+
+    //   return usedByThisCity;
+    // } else {
+    //   return true;
+    // }
+
+    for (let [key, value] of selected.transportByCityName) {
       if (
         value.type === modeForCity &&
         mode === modeForCity &&
@@ -53,7 +85,11 @@ const TransportList = ({ city, selected, updateSelectedTransports }) => {
     return true;
   }
 
-  console.log('TRANSPORT', selected.transport);
+  console.log(
+    'TRANSPORT',
+    selected.transportByCityName,
+    selected.transportByType
+  );
 
   return (
     <Container>
@@ -69,16 +105,17 @@ const TransportList = ({ city, selected, updateSelectedTransports }) => {
             disabled={mode.max_distance < city.distance}
           />
           <label htmlFor={`${city.id}__${mode.type}`}>{mode.type}</label>
-          {selected.transport.has(city.name) && // checks if transport has been picked
-          !handleTranportAvailable(mode.type, city.name) && //
+
+          {selected.transportByCityName.has(city.name) &&
+            !handleTranportAvailable(mode.type, city.name) &&
             'Oops, this transport mode has already been used.'}
         </div>
       ))}
       <div>
         Time to get there:{' '}
-        {selected.transport.has(city.name)
+        {selected.transportByCityName.has(city.name)
           ? selected.cities.get(city.name).distance /
-            selected.transport.get(city.name).speed
+            selected.transportByCityName.get(city.name).speed
           : '_'}{' '}
         hours
       </div>
