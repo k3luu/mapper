@@ -5,8 +5,7 @@ import CityDetails from '../../data/CityDetails';
 import Transport from '../../data/Transport';
 
 const Container = styled.div`
-  background-color: blue;
-  color: white;
+  margin: 0 auto;
 `;
 
 function List() {
@@ -44,6 +43,21 @@ function List() {
     setSelectedTransport(newTransportList);
   }
 
+  function calculateTotalTime() {
+    let total = 0;
+    let cityDistance, speed;
+
+    for (let [key, value] of selectedCities) {
+      cityDistance = value.distance;
+
+      if (selectedTransport.has(key)) {
+        speed = selectedTransport.get(key).speed;
+        total += cityDistance / speed;
+      }
+    }
+
+    return total;
+  }
   console.log(selectedCities, selectedTransport);
 
   return (
@@ -74,6 +88,7 @@ function List() {
                     name={city.name}
                     value={mode.type}
                     onChange={handleTransportSelect}
+                    disabled={mode.max_distance < city.distance}
                   />
                   <label htmlFor={`${city.id}__${mode.type}`}>
                     {mode.type}
@@ -92,6 +107,9 @@ function List() {
           )}
         </div>
       ))}
+
+      <h3>Total Time Spent Traveling</h3>
+      {calculateTotalTime()}
     </Container>
   );
 }
