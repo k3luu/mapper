@@ -1,18 +1,24 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
-import User from '../../data/User';
 
 const Container = styled.div`
   background-color: blue;
   color: white;
 `;
 
-function Greeting() {
+const mapStateToProps = state => ({
+  user: state.user
+});
+
+function Greeting({ user }) {
   return (
     <Container>
-      <h1>Hi {User.user}!</h1>
+      <h1>
+        Hi {user.name}! You are able to select {user.num_cities} cities.
+      </h1>
     </Container>
   );
 }
 
-export default Greeting;
+export default connect(mapStateToProps)(Greeting);

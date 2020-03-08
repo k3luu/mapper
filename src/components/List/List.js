@@ -1,25 +1,42 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
-import User from '../../data/User';
+
 import CityDetails from '../../data/CityDetails';
 import Transport from '../../data/Transport';
+import {
+  updateSelectedCities,
+  updateSelectedTransports
+} from '../../redux/actions';
 
 const Container = styled.div`
   margin: 0 auto;
 `;
 
-function List() {
-  const [selectedCities, setSelected] = useState(new Map());
-  const [selectedTransport, setSelectedTransport] = useState(new Map());
+const mapStateToProps = state => ({
+  user: state.user,
+  selected: state.selected
+});
 
+const mapDispatchToProps = {
+  updateSelectedCities: data => updateSelectedCities(data),
+  updateSelectedTransports: data => updateSelectedTransports(data)
+};
+
+function List({
+  user,
+  selected,
+  updateSelectedCities,
+  updateSelectedTransports
+}) {
   function handleCitySelect(e) {
     const value = e.target.checked;
     const name = e.target.name;
 
-    let newList = new Map(selectedCities);
-    let newTransportList = new Map(selectedTransport);
+    let newList = new Map(selected.cities);
+    let newTransportList = new Map(selected.transport);
 
-    if (value && newList.size < User.num_cities) {
+    if (value && newList.size < user.num_cities) {
       let item = CityDetails.filter(p => p.name === name)[0];
       newList.set(name, item);
     } else {
@@ -27,8 +44,8 @@ function List() {
       newTransportList.delete(name);
     }
 
-    setSelected(newList);
-    setSelectedTransport(newTransportList);
+    updateSelectedCities(newList);
+    updateSelectedTransports(newTransportList);
   }
 
   /**
@@ -38,9 +55,9 @@ function List() {
    * @return true if mode is available, false if already being used
    */
   function handleTranportAvailable(mode, cityName) {
-    let modeForCity = selectedTransport.get(cityName).type;
+    let modeForCity = selected.transport.get(cityName).type;
 
-    for (let [key, value] of selectedTransport) {
+    for (let [key, value] of selected.transport) {
       if (
         value.type === modeForCity &&
         mode === modeForCity &&
@@ -57,36 +74,36 @@ function List() {
     const value = e.target.value;
     const name = e.target.name;
 
-    let newTransportList = new Map(selectedTransport);
+    let newTransportList = new Map(selected.transport);
     let item = Transport.filter(p => p.type === value)[0];
 
     newTransportList.set(name, item);
 
-    setSelectedTransport(newTransportList);
+    updateSelectedTransports(newTransportList);
   }
 
   function calculateTotalTime() {
     let total = 0;
     let cityDistance, speed;
 
-    for (let [key, value] of selectedCities) {
+    for (let [key, value] of selected.cities) {
       cityDistance = value.distance;
 
-      if (selectedTransport.has(key)) {
-        speed = selectedTransport.get(key).speed;
+      if (selected.transport.has(key)) {
+        speed = selected.transport.get(key).speed;
         total += cityDistance / speed;
       }
     }
 
     return total;
   }
-  console.log(selectedCities, selectedTransport);
+  console.log(selected);
 
   return (
     <Container>
       <h3>Please select the cities you would like to interview at.</h3>
       <div>
-        {selectedCities.size} / {User.num_cities} Cities selected
+        {selected.cities.size} / {user.num_cities} Cities selected
       </div>
       {CityDetails.map(city => (
         <div key={city.id}>
@@ -96,14 +113,14 @@ function List() {
             name={city.name}
             onChange={handleCitySelect}
             disabled={
-              selectedCities.size === User.num_cities &&
-              !selectedCities.has(city.name)
+              selected.cities.size === user.num_cities &&
+              !selected.cities.has(city.name)
             }
           />
           <label htmlFor={city.id}>
             {city.name} - {city.distance} miles away
           </label>
-          {selectedCities.has(city.name) && (
+          {selected.cities.has(city.name) && (
             <div>
               <h4>How would you like to get there?</h4>
               {Transport.map(mode => (
@@ -120,16 +137,16 @@ function List() {
                   <label htmlFor={`${city.id}__${mode.type}`}>
                     {mode.type}
                   </label>
-                  {selectedTransport.has(city.name) && // checks if transport has been picked
+                  {selected.transport.has(city.name) && // checks if transport has been picked
                   !handleTranportAvailable(mode.type, city.name) && //
                     'Oops, this transport mode has already been used.'}
                 </>
               ))}
               <div>
                 Time to get there:{' '}
-                {selectedTransport.has(city.name)
-                  ? selectedCities.get(city.name).distance /
-                    selectedTransport.get(city.name).speed
+                {selected.transport.has(city.name)
+                  ? selected.cities.get(city.name).distance /
+                    selected.transport.get(city.name).speed
                   : '_'}{' '}
                 hours
               </div>
@@ -143,4 +160,4 @@ function List() {
   );
 }
 
-export default List;
+export default connect(mapStateToProps, mapDispatchToProps)(List);
