@@ -31,6 +31,28 @@ function List() {
     setSelectedTransport(newTransportList);
   }
 
+  /**
+   * @param {*} mode the transport mode we're checking for
+   * @param {*} cityName the city we're checking against
+   *
+   * @return true if mode is available, false if already being used
+   */
+  function handleTranportAvailable(mode, cityName) {
+    let modeForCity = selectedTransport.get(cityName).type;
+
+    for (let [key, value] of selectedTransport) {
+      if (
+        value.type === modeForCity &&
+        mode === modeForCity &&
+        key !== cityName
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   function handleTransportSelect(e) {
     const value = e.target.value;
     const name = e.target.name;
@@ -62,6 +84,10 @@ function List() {
 
   return (
     <Container>
+      <h3>Please select the cities you would like to interview at.</h3>
+      <div>
+        {selectedCities.size} / {User.num_cities} Cities selected
+      </div>
       {CityDetails.map(city => (
         <div key={city.id}>
           <input
@@ -79,6 +105,7 @@ function List() {
           </label>
           {selectedCities.has(city.name) && (
             <div>
+              <h4>How would you like to get there?</h4>
               {Transport.map(mode => (
                 <>
                   <input
@@ -93,6 +120,9 @@ function List() {
                   <label htmlFor={`${city.id}__${mode.type}`}>
                     {mode.type}
                   </label>
+                  {selectedTransport.has(city.name) && // checks if transport has been picked
+                  !handleTranportAvailable(mode.type, city.name) && //
+                    'Oops, this transport mode has already been used.'}
                 </>
               ))}
               <div>
@@ -107,9 +137,8 @@ function List() {
           )}
         </div>
       ))}
-
       <h3>Total Time Spent Traveling</h3>
-      {calculateTotalTime()}
+      {calculateTotalTime()} hours
     </Container>
   );
 }
