@@ -18,7 +18,7 @@ const mapDispatchToProps = {
   updateSelectedTransports: data => updateSelectedTransports(data)
 };
 
-const TransportSelection = ({ city, selected, updateSelectedTransports }) => {
+const TransportList = ({ city, selected, updateSelectedTransports }) => {
   function handleTransportSelect(e) {
     const value = e.target.value;
     const name = e.target.name;
@@ -59,9 +59,8 @@ const TransportSelection = ({ city, selected, updateSelectedTransports }) => {
     <Container>
       <h4>How would you like to get there?</h4>
       {Transport.map(mode => (
-        <>
+        <div key={mode.id}>
           <input
-            key={mode.id}
             type="radio"
             id={`${city.id}__${mode.type}`}
             name={city.name}
@@ -73,7 +72,7 @@ const TransportSelection = ({ city, selected, updateSelectedTransports }) => {
           {selected.transport.has(city.name) && // checks if transport has been picked
           !handleTranportAvailable(mode.type, city.name) && //
             'Oops, this transport mode has already been used.'}
-        </>
+        </div>
       ))}
       <div>
         Time to get there:{' '}
@@ -87,4 +86,4 @@ const TransportSelection = ({ city, selected, updateSelectedTransports }) => {
   );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(TransportSelection);
+export default connect(mapStateToProps, mapDispatchToProps)(TransportList);

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import styled from 'styled-components';
 
 import CityDetails from '../../data/CityDetails';
-import TransportSelection from '../TransportSelection';
+import TransportList from '../TransportList';
 import {
   updateSelectedCities,
   updateSelectedTransports
@@ -67,7 +67,7 @@ const CitySelection = ({
       <label htmlFor={city.id}>
         {city.name} - {city.distance} miles away
       </label>
-      {selected.cities.has(city.name) && <TransportSelection city={city} />}
+      {selected.cities.has(city.name) && <TransportList city={city} />}
     </Container>
   );
 };
