@@ -1,7 +1,7 @@
 import React from 'react';
 
-import Greeting from './components/Greeting/Greeting';
-import List from './components/List/List';
+import Greeting from './components/Greeting';
+import List from './components/List';
 
 function App() {
   return (
