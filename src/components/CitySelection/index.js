@@ -90,7 +90,11 @@ const CitySelection = ({
               <>
                 <styles.MainLabel>{city.name}</styles.MainLabel>
                 <styles.Sublabel>
-                  Distance: {city.distance} miles
+                  Distance:{' '}
+                  {city.distance
+                    .toString()
+                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}{' '}
+                  miles
                 </styles.Sublabel>
               </>
             }
