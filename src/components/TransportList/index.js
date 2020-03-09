@@ -5,6 +5,7 @@ import DirectionsBusOutlinedIcon from '@material-ui/icons/DirectionsBusOutlined'
 import FlightOutlinedIcon from '@material-ui/icons/FlightOutlined';
 import TrainOutlinedIcon from '@material-ui/icons/TrainOutlined';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import Transport from '../../data/Transport';
 import {
@@ -40,45 +41,136 @@ const TransportList = ({
   updateSelectedTransportsByCity,
   updateSelectedTransportsByType
 }) => {
+  /**
+   * mutate the data about the transport option as transport selections change
+   */
+  function handleTransportByTypeChange(transportOption) {
+    let newTransportByType = new Map(selected.transportByType);
+
+    if (newTransportByType.has(transportOption.type)) {
+      let transportItem = newTransportByType.get(transportOption.type);
+
+      if (transportItem.used_by[city.name]) {
+        delete transportItem.used_by[city.name];
+
+        if (Object.keys(transportItem.used_by).length === 0) {
+          // no city curr using it, so remove from map
+          newTransportByType.delete(transportOption.type);
+        }
+      } else {
+        // more than 1 use
+        transportItem.used_by[city.name] = true;
+        transportItem.mileage_left =
+          transportItem.mileage_left >= city.distance
+            ? transportItem.mileage_left - city.distance
+            : 0;
+
+        newTransportByType.set(transportOption.type, {
+          ...transportItem
+        });
+      }
+    } else {
+      newTransportByType.set(transportOption.type, {
+        max_distance: transportOption.max_distance,
+        mileage_left:
+          transportOption.max_distance >
+          city.distance - calculateMileageCurrUsed()
+            ? transportOption.max_distance -
+              (city.distance - calculateMileageCurrUsed())
+            : 0,
+        used_by: {
+          [city.name]: true
+        }
+      });
+    }
+
+    updateSelectedTransportsByType(newTransportByType);
+  }
+
   function handleTransportSelect(e) {
     const value = e.target.value;
     const cityName = e.target.name;
 
-    let newTransportList = new Map(selected.transportByCityName);
-    // let newTransportByType = new Map(selected.transportByType);
-
-    // if (newTransportList.has(cityName)) {
-    //   let cityOldTransport = newTransportList.get(cityName);
-
-    //   newTransportByType.set(cityOldTransport.type, {
-    //     ...cityOldTransport,
-    //     city: ''
-    //   });
-    // }
-
+    let newTransportByCityName = new Map(selected.transportByCityName);
+    let newTransportByType = new Map(selected.transportByType);
     let transportOption = Transport.filter(p => p.type === value)[0];
-    let transportTypeUsed = false;
 
-    newTransportList.set(cityName, transportOption);
+    console.log('transport for', cityName);
+    console.log('selected', transportOption);
 
-    for (let [key, value] of selected.transportByCityName) {
-      if (value.type === transportOption.type && key !== city.name) {
-        transportTypeUsed = true;
+    handleTransportByTypeChange(transportOption);
+
+    // add the transport option to the map by city's name
+    if (newTransportByCityName.has(cityName)) {
+      let item = newTransportByCityName.get(cityName);
+
+      // TODO: remove transport if already included and subtract from mileage
+      if (item.transport_used[transportOption.type]) {
+        delete item.transport_used[transportOption.type];
+      } else {
+        console.log('adding a new transport to the city');
+
+        if (selected.transportByType.has(transportOption.type)) {
+          // if adding another transport to the city
+          console.log('adding a used transport to the city');
+          let transportItem = selected.transportByType.get(
+            transportOption.type
+          );
+
+          item.transport_used[transportOption.type] = Math.min(
+            transportItem.mileage_left,
+            city.distance
+          );
+        } else {
+          console.log('adding an unused transport to the city');
+          item.transport_used[transportOption.type] = Math.min(
+            transportOption.max_distance,
+            city.distance - calculateMileageCurrUsed()
+          );
+        }
+      }
+
+      newTransportByCityName.set(cityName, {
+        ...item
+      });
+    } else {
+      if (selected.transportByType.has(transportOption.type)) {
+        let transportItem = selected.transportByType.get(transportOption.type);
+        newTransportByCityName.set(cityName, {
+          transport_used: {
+            [transportOption.type]: transportItem.mileage_left
+          },
+          city_distance: city.distance
+        });
+      } else {
+        newTransportByCityName.set(cityName, {
+          transport_used: {
+            [transportOption.type]: Math.min(
+              transportOption.max_distance,
+              city.distance
+            )
+          },
+          city_distance: city.distance
+        });
       }
     }
 
-    // if (newTransportByType.has(value)) {
-    // } else {
-    //   newTransportByType.set(value, {
-    //     ...transportOption,
-    //     mileageLeft: transportOption.max_distance - city.distance,
-    //     city: city.name
-    //   });
-    // }
+    updateSelectedTransportsByCity(newTransportByCityName);
+  }
 
-    changeUserHasResources(!transportTypeUsed);
-    updateSelectedTransportsByCity(newTransportList);
-    // updateSelectedTransportsByType(newTransportByType);
+  function calculateMileageCurrUsed() {
+    if (!selected.transportByCityName.has(city.name)) {
+      return 0;
+    }
+
+    let item = selected.transportByCityName.get(city.name);
+    let mileage = 0;
+
+    for (let value of Object.values(item.transport_used)) {
+      mileage += value;
+    }
+
+    return mileage;
   }
 
   /**
@@ -119,37 +211,68 @@ const TransportList = ({
     }
   }
 
+  /**
+   * return true if available, false if not
+   * @param {*} mode
+   */
+  function handleOptionAvailable(mode) {
+    if (
+      selected.transportByCityName.has(city.name) &&
+      calculateMileageCurrUsed() >=
+        selected.transportByCityName.get(city.name).city_distance &&
+      !selected.transportByCityName.get(city.name).transport_used[mode.type]
+    ) {
+      // if city's distance is covered by selections,
+      // other options are not needed
+      return false;
+    } else if (
+      selected.transportByType.has(mode.type) &&
+      selected.transportByType.get(mode.type).mileage_left === 0 &&
+      !selected.transportByType.get(mode.type).used_by[city.name]
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  console.log(selected);
+
   return (
     <styles.Container>
       <h4>How would you like to get there?</h4>
-      <styles.RadioGroup
-        aria-label={`${city.name} Transport`}
-        name={city.name}
-        onChange={handleTransportSelect}
-      >
-        {Transport.map(mode => (
-          <styles.FormControlLabel
-            key={mode.id}
-            value={mode.type}
-            control={
-              <styles.Radio
-                color="primary"
-                inputProps={{ ...{ 'data-testid': `${mode.type}-test` } }}
-              />
-            }
-            label={
-              <>
-                <div>{displayIconType(mode.type)}</div>
-                <div>{mode.type}</div>
-              </>
-            }
-            labelPlacement="top"
-            disabled={mode.max_distance < city.distance}
-          />
-        ))}
-      </styles.RadioGroup>
 
-      <styles.Warning
+      {Transport.map(mode => (
+        <styles.FormControlLabel
+          key={mode.id}
+          value={mode.type}
+          control={
+            <Checkbox
+              name={city.name}
+              color="primary"
+              onChange={handleTransportSelect}
+              inputProps={{ ...{ 'data-testid': `${mode.type}-test` } }}
+            />
+          }
+          label={
+            <>
+              <div>{displayIconType(mode.type)}</div>
+              <div>{mode.type}</div>
+            </>
+          }
+          labelPlacement="top"
+          disabled={!handleOptionAvailable(mode)}
+        />
+      ))}
+
+      {selected.transportByCityName.has(city.name) && (
+        <div>
+          Your options can cover {calculateMileageCurrUsed()} miles of your{' '}
+          {city.distance} mile trip.
+        </div>
+      )}
+
+      {/* <styles.Warning
         active={
           !!handleTranportAvailable() &&
           selected.transportByCityName.has(handleTranportAvailable())
@@ -161,7 +284,7 @@ const TransportList = ({
           <span>{handleTranportAvailable()}</span> trip. Please select another
           mode of transportation.
         </div>
-      </styles.Warning>
+      </styles.Warning> */}
 
       <styles.TimeToDestination>
         Time to destination:{' '}
