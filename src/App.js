@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Greeting from './components/Greeting';
-import List from './components/CityList';
+import CityList from './components/CityList';
 
 const AppHeader = styled.header`
   background-color: #235789;
@@ -19,8 +19,18 @@ const AppHeader = styled.header`
 `;
 
 const Content = styled.div`
-  width: 600px;
-  margin: 0 auto;
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 0 10px;
+  display: flex;
+  flex-direction: row-reverse;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    max-width: 600px;
+    justify-content: center;
+    align-items: center;
+  }
 `;
 
 function App() {
@@ -29,7 +39,7 @@ function App() {
       <AppHeader>Map Your Route</AppHeader>
       <Content>
         <Greeting />
-        <List />
+        <CityList />
       </Content>
     </>
   );

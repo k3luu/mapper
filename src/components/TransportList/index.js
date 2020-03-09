@@ -22,6 +22,15 @@ const mapDispatchToProps = {
   updateSelectedTransportsByType: data => updateSelectedTransportsByType(data)
 };
 
+/**
+ * Displays the transportation options available for a city.
+ *
+ * Behavior:
+ *  - Options will be disabled if transportation cannot cover
+ *    distance of city
+ *  - Warning message will appear to note when more than one city
+ *    has selected the same transport option
+ */
 const TransportList = ({
   city,
   selected,

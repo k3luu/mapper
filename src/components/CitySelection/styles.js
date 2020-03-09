@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { withStyles } from '@material-ui/core/styles';
 import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
 import MuiExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import MuiExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import MuiCheckbox from '@material-ui/core/Checkbox';
 import MuiFormControlLabel from '@material-ui/core/FormControlLabel';
 
@@ -11,6 +10,9 @@ export const ExpansionPanel = withStyles({
     border: '1px solid rgba(0, 0, 0, .125)',
     padding: 0,
     boxShadow: 'none',
+    maxWidth: 400,
+    minWidth: 300,
+    width: '100%',
     '&:not(:last-child)': {
       borderBottom: 0
     },
@@ -18,7 +20,7 @@ export const ExpansionPanel = withStyles({
       display: 'none'
     },
     '&$expanded': {
-      margin: 'auto'
+      margin: 0
     }
   },
   expanded: {}
@@ -43,22 +45,25 @@ export const ExpansionPanelSummary = withStyles({
       minHeight: 60
     }
   },
+  expandIcon: {
+    position: 'absolute',
+    right: 10,
+    zIndex: 0
+  },
   expanded: {}
 })(MuiExpansionPanelSummary);
 
 export const FormControlLabel = withStyles(theme => ({
   root: {
     width: '100%',
-    margin: 0
+    margin: 0,
+    zIndex: 1
   }
 }))(MuiFormControlLabel);
 
 export const Checkbox = withStyles(theme => ({
   colorPrimary: {
-    color: '#235789',
-    '&$checked': {
-      color: '#235789'
-    }
+    color: '#235789'
   }
 }))(MuiCheckbox);
 

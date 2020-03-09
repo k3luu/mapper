@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import CityDetails from '../../data/CityDetails';
 import TransportList from '../TransportList';
@@ -20,6 +21,16 @@ const mapDispatchToProps = {
   updateSelectedTransportsByCity: data => updateSelectedTransportsByCity(data)
 };
 
+/**
+ * Component to render a single city and the transportation
+ * options available.
+ *
+ * Behavior:
+ *  - if city selected, the panel will expand to display the
+ *    transport selection
+ *  - if not selected, the panel will stay collapsed to only
+ *    show basic city information
+ */
 const CitySelection = ({
   selected,
   user,
@@ -27,7 +38,7 @@ const CitySelection = ({
   updateSelectedCities,
   updateSelectedTransportsByCity
 }) => {
-  function handleCitySelect(e) {
+  function handleCitySelection(e) {
     const value = e.target.checked;
     const name = e.target.name;
 
@@ -58,6 +69,7 @@ const CitySelection = ({
         aria-label="Select City"
         aria-controls="select-transportation-content"
         id={`select-city-transportation-${city.id}`}
+        expandIcon={<ExpandMoreIcon />}
       >
         <styles.FormControlLabel
           aria-label={`${city.name} Selection`}
@@ -65,7 +77,7 @@ const CitySelection = ({
             <styles.Checkbox
               name={city.name}
               color="primary"
-              onChange={handleCitySelect}
+              onChange={handleCitySelection}
               disabled={
                 selected.cities.size === user.num_cities &&
                 !selected.cities.has(city.name)
