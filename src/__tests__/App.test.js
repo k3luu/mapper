@@ -4,12 +4,14 @@ import { Provider } from 'react-redux';
 import App from '../App';
 import store from '../redux/store';
 
-test('renders header', () => {
-  const { getByText } = render(
-    <Provider store={store}>
-      <App />
-    </Provider>
-  );
-  const headerElement = getByText(/Map Your Route/i);
-  expect(headerElement).toBeInTheDocument();
+describe('<App/>', () => {
+  test('renders header', () => {
+    const { getByText } = render(
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+    const headerElement = getByText(/Map Your Route/i);
+    expect(headerElement).toBeInTheDocument();
+  });
 });

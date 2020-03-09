@@ -110,8 +110,13 @@ const TransportList = ({
 
   console.log(
     'TRANSPORT LIST',
+    selected.cities,
     selected.transportByCityName,
-    selected.transportByType
+    selected.transportByCityName.has(city.name) &&
+      Math.floor(
+        selected.cities.get(city.name).distance /
+          selected.transportByCityName.get(city.name).speed
+      )
   );
 
   return (
@@ -126,7 +131,12 @@ const TransportList = ({
           <styles.FormControlLabel
             key={mode.id}
             value={mode.type}
-            control={<styles.Radio color="primary" />}
+            control={
+              <styles.Radio
+                color="primary"
+                inputProps={{ ...{ 'data-testid': `${mode.type}-test` } }}
+              />
+            }
             label={
               <>
                 <div>{displayIconType(mode.type)}</div>
@@ -151,8 +161,10 @@ const TransportList = ({
       <styles.TimeToDestination>
         Time to destination:{' '}
         {selected.transportByCityName.has(city.name)
-          ? selected.cities.get(city.name).distance /
-            selected.transportByCityName.get(city.name).speed
+          ? Math.floor(
+              selected.cities.get(city.name).distance /
+                selected.transportByCityName.get(city.name).speed
+            )
           : '_'}{' '}
         hours
       </styles.TimeToDestination>
