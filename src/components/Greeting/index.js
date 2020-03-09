@@ -7,11 +7,13 @@ const Container = styled.div`
   display: table;
   padding: 0 20px;
   margin: 0 10px;
-  border: 1px solid #235789;
+  border: 2px solid #235789;
   border-radius: 4px;
   position: relative;
-  max-width: 300px;
+  max-width: 250px;
   width: 100%;
+  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
 
   @media (max-width: 900px) {
     width: 100%;
@@ -22,20 +24,22 @@ const Container = styled.div`
 
 const Subtitle = styled.div`
   font-size: 14px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #235789;
 `;
 
 const Counter = styled.div`
   margin: 20px 0;
-  text-align: center;
+  font-weight: bold;
 
   span {
     color: #235789;
-    font-weight: bold;
   }
 `;
 
 const TotalTimeList = styled.ul`
   list-style-type: none;
+  padding: 0;
 
   li {
     display: flex;
