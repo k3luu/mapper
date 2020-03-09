@@ -8,6 +8,7 @@ import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 import Transport from '../../data/Transport';
 import {
+  changeUserHasResources,
   updateSelectedTransportsByCity,
   updateSelectedTransportsByType
 } from '../../redux/actions';
@@ -18,6 +19,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
+  changeUserHasResources: data => changeUserHasResources(data),
   updateSelectedTransportsByCity: data => updateSelectedTransportsByCity(data),
   updateSelectedTransportsByType: data => updateSelectedTransportsByType(data)
 };
@@ -34,6 +36,7 @@ const mapDispatchToProps = {
 const TransportList = ({
   city,
   selected,
+  changeUserHasResources,
   updateSelectedTransportsByCity,
   updateSelectedTransportsByType
 }) => {
@@ -54,8 +57,15 @@ const TransportList = ({
     // }
 
     let transportOption = Transport.filter(p => p.type === value)[0];
+    let transportTypeUsed = false;
 
     newTransportList.set(cityName, transportOption);
+
+    for (let [key, value] of selected.transportByCityName) {
+      if (value.type === transportOption.type && key !== city.name) {
+        transportTypeUsed = true;
+      }
+    }
 
     // if (newTransportByType.has(value)) {
     // } else {
@@ -66,6 +76,7 @@ const TransportList = ({
     //   });
     // }
 
+    changeUserHasResources(!transportTypeUsed);
     updateSelectedTransportsByCity(newTransportList);
     // updateSelectedTransportsByType(newTransportByType);
   }
@@ -80,7 +91,7 @@ const TransportList = ({
 
     let typeCurrCityUsing = selected.transportByCityName.get(city.name).type;
 
-    for (let [key, value] of selected.transportByCityName) {
+    for (let [key, value] of selected.transportByCityName.entries()) {
       if (value.type === typeCurrCityUsing && key !== city.name) {
         return key;
       }

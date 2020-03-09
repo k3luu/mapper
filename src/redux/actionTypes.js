@@ -1,6 +1,7 @@
 /* actions to mutate USER reducer */
 export const CHANGE_USER = 'CHANGE_USERS';
 export const CHANGE_CITIES_NUMBER = 'CHANGE_CITIES_NUMBER';
+export const CHANGE_USER_RESOURCES = 'CHANGE_USER_RESOURCES';
 
 /* actions to mutate SELECTED reducer */
 export const UPDATE_CITIES_SELECTED = 'UPDATE_CITIES_SELECTED';
