@@ -10,8 +10,6 @@ export const ExpansionPanel = withStyles({
     border: '1px solid rgba(0, 0, 0, .125)',
     padding: 0,
     boxShadow: 'none',
-    maxWidth: 400,
-    minWidth: 300,
     width: '100%',
     '&:not(:last-child)': {
       borderBottom: 0
@@ -62,12 +60,23 @@ export const FormControlLabel = withStyles(theme => ({
 }))(MuiFormControlLabel);
 
 export const Checkbox = withStyles(theme => ({
-  colorPrimary: {
+  root: {
     color: '#235789'
+  },
+  checked: {
+    color: '#235789'
+  },
+  colorPrimary: {
+    color: '#235789',
+    '&$checked': {
+      color: '#235789'
+    }
   }
 }))(MuiCheckbox);
 
-export const Container = styled.div``;
+export const Container = styled.div`
+  width: 100%;
+`;
 
 export const MainLabel = styled.div``;
 

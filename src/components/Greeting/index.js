@@ -25,6 +25,11 @@ const Subtitle = styled.div`
 const Counter = styled.div`
   margin: 20px 0;
   text-align: center;
+
+  span {
+    color: #235789;
+    font-weight: bold;
+  }
 `;
 
 const TotalTimeList = styled.ul`
@@ -73,7 +78,7 @@ const Greeting = ({ user, selected }) => {
       </Subtitle>
 
       <Counter>
-        {selected.cities.size} / {user.num_cities} Cities selected
+        <span>{selected.cities.size}</span> / {user.num_cities} Cities selected
       </Counter>
 
       <h4>Total Time Spent Traveling</h4>

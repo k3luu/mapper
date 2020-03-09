@@ -58,45 +58,49 @@ const CitySelection = ({
   }
 
   return (
-    <styles.ExpansionPanel
-      disabled={
-        selected.cities.size === user.num_cities &&
-        !selected.cities.has(city.name)
-      }
-      expanded={selected.cities.has(city.name)}
-    >
-      <styles.ExpansionPanelSummary
-        aria-label="Select City"
-        aria-controls="select-transportation-content"
-        id={`select-city-transportation-${city.id}`}
-        expandIcon={<ExpandMoreIcon />}
+    <styles.Container>
+      <styles.ExpansionPanel
+        disabled={
+          selected.cities.size === user.num_cities &&
+          !selected.cities.has(city.name)
+        }
+        expanded={selected.cities.has(city.name)}
       >
-        <styles.FormControlLabel
-          aria-label={`${city.name} Selection`}
-          control={
-            <styles.Checkbox
-              name={city.name}
-              color="primary"
-              onChange={handleCitySelection}
-              disabled={
-                selected.cities.size === user.num_cities &&
-                !selected.cities.has(city.name)
-              }
-              inputProps={{ ...{ 'data-testid': city.id } }}
-            />
-          }
-          label={
-            <>
-              <styles.MainLabel>{city.name}</styles.MainLabel>
-              <styles.Sublabel>Distance: {city.distance} miles</styles.Sublabel>
-            </>
-          }
-        />
-      </styles.ExpansionPanelSummary>
-      <ExpansionPanelDetails>
-        {selected.cities.has(city.name) && <TransportList city={city} />}
-      </ExpansionPanelDetails>
-    </styles.ExpansionPanel>
+        <styles.ExpansionPanelSummary
+          aria-label="Select City"
+          aria-controls="select-transportation-content"
+          id={`select-city-transportation-${city.id}`}
+          expandIcon={<ExpandMoreIcon />}
+        >
+          <styles.FormControlLabel
+            aria-label={`${city.name} Selection`}
+            control={
+              <styles.Checkbox
+                name={city.name}
+                color="primary"
+                onChange={handleCitySelection}
+                disabled={
+                  selected.cities.size === user.num_cities &&
+                  !selected.cities.has(city.name)
+                }
+                inputProps={{ ...{ 'data-testid': city.id } }}
+              />
+            }
+            label={
+              <>
+                <styles.MainLabel>{city.name}</styles.MainLabel>
+                <styles.Sublabel>
+                  Distance: {city.distance} miles
+                </styles.Sublabel>
+              </>
+            }
+          />
+        </styles.ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          {selected.cities.has(city.name) && <TransportList city={city} />}
+        </ExpansionPanelDetails>
+      </styles.ExpansionPanel>
+    </styles.Container>
   );
 };
 

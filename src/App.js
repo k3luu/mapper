@@ -21,15 +21,23 @@ const AppHeader = styled.header`
 const Content = styled.div`
   max-width: 900px;
   margin: 30px auto;
-  padding: 0 10px;
+  padding: 0 20px;
   display: flex;
   flex-direction: row-reverse;
+
+  > div:first-child {
+    margin-left: 40px;
+  }
 
   @media (max-width: 900px) {
     flex-direction: column;
     max-width: 600px;
     justify-content: center;
     align-items: center;
+
+    > div:first-child {
+      margin-left: inherit;
+    }
   }
 `;
 

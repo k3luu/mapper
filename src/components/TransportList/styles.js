@@ -7,6 +7,15 @@ import MuiFormControlLabel from '@material-ui/core/FormControlLabel';
 export const Radio = withStyles(theme => ({
   root: {
     color: '#235789'
+  },
+  checked: {
+    color: '#235789'
+  },
+  colorPrimary: {
+    color: '#235789',
+    '&$checked': {
+      color: '#235789'
+    }
   }
 }))(MuiRadio);
 
@@ -29,21 +38,24 @@ export const Container = styled.div`
 `;
 
 export const Warning = styled.div`
-  visibility ${props => (props.active ? 'visible' : 'hidden')};
+  opacity: ${props => (props.active ? 1 : 0)};
+  height: ${props => (props.active ? '80px' : 0)};
   display: flex;
   align-items: center;
   border: 1px solid #eac435;
   border-radius: 4px;
   padding: 10px;
   color: #cca20c;
+  margin: 20px 0;
+  transition: 0.07s;
 
   > div {
     margin: 0 10px;
-    line-height: 1.3
+    line-height: 1.3;
   }
 
   span {
-    font-weight: bold
+    font-weight: bold;
   }
 `;
 

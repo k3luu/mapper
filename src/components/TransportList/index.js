@@ -42,32 +42,32 @@ const TransportList = ({
     const cityName = e.target.name;
 
     let newTransportList = new Map(selected.transportByCityName);
-    let newTransportByType = new Map(selected.transportByType);
+    // let newTransportByType = new Map(selected.transportByType);
 
-    if (newTransportList.has(cityName)) {
-      let cityOldTransport = newTransportList.get(cityName);
+    // if (newTransportList.has(cityName)) {
+    //   let cityOldTransport = newTransportList.get(cityName);
 
-      newTransportByType.set(cityOldTransport.type, {
-        ...cityOldTransport,
-        city: ''
-      });
-    }
+    //   newTransportByType.set(cityOldTransport.type, {
+    //     ...cityOldTransport,
+    //     city: ''
+    //   });
+    // }
 
     let transportOption = Transport.filter(p => p.type === value)[0];
 
     newTransportList.set(cityName, transportOption);
 
-    if (newTransportByType.has(value)) {
-    } else {
-      newTransportByType.set(value, {
-        ...transportOption,
-        mileageLeft: transportOption.max_distance - city.distance,
-        city: city.name
-      });
-    }
+    // if (newTransportByType.has(value)) {
+    // } else {
+    //   newTransportByType.set(value, {
+    //     ...transportOption,
+    //     mileageLeft: transportOption.max_distance - city.distance,
+    //     city: city.name
+    //   });
+    // }
 
     updateSelectedTransportsByCity(newTransportList);
-    updateSelectedTransportsByType(newTransportByType);
+    // updateSelectedTransportsByType(newTransportByType);
   }
 
   /**
@@ -108,17 +108,6 @@ const TransportList = ({
     }
   }
 
-  console.log(
-    'TRANSPORT LIST',
-    selected.cities,
-    selected.transportByCityName,
-    selected.transportByCityName.has(city.name) &&
-      Math.floor(
-        selected.cities.get(city.name).distance /
-          selected.transportByCityName.get(city.name).speed
-      )
-  );
-
   return (
     <styles.Container>
       <h4>How would you like to get there?</h4>
@@ -149,7 +138,12 @@ const TransportList = ({
         ))}
       </styles.RadioGroup>
 
-      <styles.Warning active={!!handleTranportAvailable()}>
+      <styles.Warning
+        active={
+          !!handleTranportAvailable() &&
+          selected.transportByCityName.has(handleTranportAvailable())
+        }
+      >
         <InfoOutlinedIcon style={{ color: '#eac435' }} />
         <div>
           Oops, this option has already been planned for your{' '}
