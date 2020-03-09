@@ -92,7 +92,6 @@ const TransportList = ({
     const cityName = e.target.name;
 
     let newTransportByCityName = new Map(selected.transportByCityName);
-    let newTransportByType = new Map(selected.transportByType);
     let transportOption = Transport.filter(p => p.type === value)[0];
 
     console.log('transport for', cityName);
