@@ -23,7 +23,7 @@ export const updateSelectedCities = data => ({
   data
 });
 
-export const updateSelectedTransportsByName = data => ({
+export const updateSelectedTransportsByCity = data => ({
   type: UPDATE_TRANSPORT_SELECTED_BY_CITY,
   data
 });

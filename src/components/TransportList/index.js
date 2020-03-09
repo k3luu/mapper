@@ -1,125 +1,153 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import styled from 'styled-components';
+import DriveEtaOutlinedIcon from '@material-ui/icons/DriveEtaOutlined';
+import DirectionsBusOutlinedIcon from '@material-ui/icons/DirectionsBusOutlined';
+import FlightOutlinedIcon from '@material-ui/icons/FlightOutlined';
+import TrainOutlinedIcon from '@material-ui/icons/TrainOutlined';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 import Transport from '../../data/Transport';
 import {
-  updateSelectedTransportsByName,
+  updateSelectedTransportsByCity,
   updateSelectedTransportsByType
 } from '../../redux/actions';
-
-const Container = styled.div`
-  background-color: green;
-  color: white;
-`;
+import * as styles from './styles';
 
 const mapStateToProps = state => ({
   selected: state.selected
 });
 
 const mapDispatchToProps = {
-  updateSelectedTransportsByName: data => updateSelectedTransportsByName(data),
+  updateSelectedTransportsByCity: data => updateSelectedTransportsByCity(data),
   updateSelectedTransportsByType: data => updateSelectedTransportsByType(data)
 };
 
 const TransportList = ({
   city,
   selected,
-  updateSelectedTransportsByName,
+  updateSelectedTransportsByCity,
   updateSelectedTransportsByType
 }) => {
   function handleTransportSelect(e) {
     const value = e.target.value;
-    const name = e.target.name;
+    const cityName = e.target.name;
 
     let newTransportList = new Map(selected.transportByCityName);
     let newTransportByType = new Map(selected.transportByType);
 
-    let item = Transport.filter(p => p.type === value)[0];
+    if (newTransportList.has(cityName)) {
+      let cityOldTransport = newTransportList.get(cityName);
 
-    newTransportList.set(name, item);
-    newTransportByType.set(value, {
-      ...item,
-      mileageLeft: item.max_distance - city.distance,
-      city: city.name
-    });
+      newTransportByType.set(cityOldTransport.type, {
+        ...cityOldTransport,
+        city: ''
+      });
+    }
 
-    updateSelectedTransportsByName(newTransportList);
+    let transportOption = Transport.filter(p => p.type === value)[0];
+
+    newTransportList.set(cityName, transportOption);
+
+    if (newTransportByType.has(value)) {
+    } else {
+      newTransportByType.set(value, {
+        ...transportOption,
+        mileageLeft: transportOption.max_distance - city.distance,
+        city: city.name
+      });
+    }
+
+    updateSelectedTransportsByCity(newTransportList);
     updateSelectedTransportsByType(newTransportByType);
   }
 
   /**
-   * @param {*} mode the transport mode we're checking for
-   * @param {*} cityName the city we're checking against
-   *
-   * @return true if mode is available, false if already being used
+   * @return string of city using the transport, null if not in use
    */
-  function handleTranportAvailable(mode, cityName) {
-    let modeForCity = selected.transportByCityName.get(cityName).type;
+  function handleTranportAvailable() {
+    if (!selected.transportByCityName.has(city.name)) {
+      return null;
+    }
 
-    console.log(mode, cityName, modeForCity);
-
-    // if (mode === modeForCity) {
-    //   let usedByThisCity = false;
-
-    //   if (selected.transportByType.has(modeForCity)) {
-    //     usedByThisCity =
-    //       selected.transportByType.get(modeForCity).city !== cityName;
-    //   }
-
-    //   return usedByThisCity;
-    // } else {
-    //   return true;
-    // }
+    let typeCurrCityUsing = selected.transportByCityName.get(city.name).type;
 
     for (let [key, value] of selected.transportByCityName) {
-      if (
-        value.type === modeForCity &&
-        mode === modeForCity &&
-        key !== cityName
-      ) {
-        return false;
+      if (value.type === typeCurrCityUsing && key !== city.name) {
+        return key;
       }
     }
 
-    return true;
+    return null;
+  }
+
+  function displayIconType(type) {
+    switch (type) {
+      case 'Car':
+        return <DriveEtaOutlinedIcon />;
+
+      case 'Train':
+        return <TrainOutlinedIcon />;
+
+      case 'Bus':
+        return <DirectionsBusOutlinedIcon />;
+
+      case 'Plane':
+        return <FlightOutlinedIcon />;
+
+      default:
+        return;
+    }
   }
 
   console.log(
-    'TRANSPORT',
+    'TRANSPORT LIST',
     selected.transportByCityName,
     selected.transportByType
   );
 
   return (
-    <Container>
+    <styles.Container>
       <h4>How would you like to get there?</h4>
-      {Transport.map(mode => (
-        <div key={mode.id}>
-          <input
-            type="radio"
-            id={`${city.id}__${mode.type}`}
-            name={city.name}
+      <styles.RadioGroup
+        aria-label={`${city.name} Transport`}
+        name={city.name}
+        onChange={handleTransportSelect}
+      >
+        {Transport.map(mode => (
+          <styles.FormControlLabel
+            key={mode.id}
             value={mode.type}
-            onChange={handleTransportSelect}
+            control={<styles.Radio color="primary" />}
+            label={
+              <>
+                <div>{displayIconType(mode.type)}</div>
+                <div>{mode.type}</div>
+              </>
+            }
+            labelPlacement="top"
             disabled={mode.max_distance < city.distance}
           />
-          <label htmlFor={`${city.id}__${mode.type}`}>{mode.type}</label>
+        ))}
+      </styles.RadioGroup>
 
-          {selected.transportByCityName.has(city.name) &&
-            !handleTranportAvailable(mode.type, city.name) &&
-            'Oops, this transport mode has already been used.'}
+      <styles.Warning active={!!handleTranportAvailable()}>
+        <InfoOutlinedIcon style={{ color: '#eac435' }} />
+        <div>
+          Oops, this option has already been planned for your{' '}
+          <span>{handleTranportAvailable()}</span> trip. Please select another
+          mode of transportation.
         </div>
-      ))}
-      <div>
-        Time to get there:{' '}
+      </styles.Warning>
+
+      <styles.TimeToDestination>
+        Time to destination:{' '}
         {selected.transportByCityName.has(city.name)
           ? selected.cities.get(city.name).distance /
             selected.transportByCityName.get(city.name).speed
           : '_'}{' '}
         hours
-      </div>
-    </Container>
+      </styles.TimeToDestination>
+    </styles.Container>
   );
 };
 

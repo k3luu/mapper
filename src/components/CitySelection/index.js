@@ -1,13 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Checkbox from '@material-ui/core/Checkbox';
 
 import CityDetails from '../../data/CityDetails';
 import TransportList from '../TransportList';
 import {
   updateSelectedCities,
-  updateSelectedTransportsByName
+  updateSelectedTransportsByCity
 } from '../../redux/actions';
 import * as styles from './styles';
 
@@ -18,7 +17,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   updateSelectedCities: data => updateSelectedCities(data),
-  updateSelectedTransports: data => updateSelectedTransportsByName(data)
+  updateSelectedTransportsByCity: data => updateSelectedTransportsByCity(data)
 };
 
 const CitySelection = ({
@@ -26,13 +25,11 @@ const CitySelection = ({
   user,
   city,
   updateSelectedCities,
-  updateSelectedTransports
+  updateSelectedTransportsByCity
 }) => {
   function handleCitySelect(e) {
     const value = e.target.checked;
     const name = e.target.name;
-
-    console.log('clicked', e);
 
     let newList = new Map(selected.cities);
     let newTransportList = new Map(selected.transportByCityName);
@@ -46,44 +43,48 @@ const CitySelection = ({
     }
 
     updateSelectedCities(newList);
-    updateSelectedTransports(newTransportList);
+    updateSelectedTransportsByCity(newTransportList);
   }
 
   return (
-    <styles.Container>
-      <styles.ExpansionPanel
-        disabled={
-          selected.cities.size === user.num_cities &&
-          !selected.cities.has(city.name)
-        }
-        expanded={selected.cities.has(city.name)}
+    <styles.ExpansionPanel
+      disabled={
+        selected.cities.size === user.num_cities &&
+        !selected.cities.has(city.name)
+      }
+      expanded={selected.cities.has(city.name)}
+    >
+      <styles.ExpansionPanelSummary
+        aria-label="Select City"
+        aria-controls="select-transportation-content"
+        id={`select-city-transportation-${city.id}`}
       >
-        <styles.ExpansionPanelSummary
-          aria-label="Select City"
-          aria-controls="select-transportation-content"
-          id={`select-city-transportation-${city.id}`}
-        >
-          <styles.FormControlLabel
-            aria-label={`${city.name} Selection`}
-            // onFocus={event => event.stopPropagation()}
-            control={
-              <Checkbox
-                name={city.name}
-                onChange={handleCitySelect}
-                disabled={
-                  selected.cities.size === user.num_cities &&
-                  !selected.cities.has(city.name)
-                }
-              />
-            }
-            label={`${city.name} - ${city.distance} miles away`}
-          />
-        </styles.ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          {selected.cities.has(city.name) && <TransportList city={city} />}
-        </ExpansionPanelDetails>
-      </styles.ExpansionPanel>
-    </styles.Container>
+        <styles.FormControlLabel
+          aria-label={`${city.name} Selection`}
+          control={
+            <styles.Checkbox
+              name={city.name}
+              color="primary"
+              onChange={handleCitySelect}
+              disabled={
+                selected.cities.size === user.num_cities &&
+                !selected.cities.has(city.name)
+              }
+            />
+          }
+          // label={`${city.name} - ${city.distance} miles away`}
+          label={
+            <>
+              <styles.MainLabel>{city.name}</styles.MainLabel>
+              <styles.Sublabel>Distance: {city.distance} miles</styles.Sublabel>
+            </>
+          }
+        />
+      </styles.ExpansionPanelSummary>
+      <ExpansionPanelDetails>
+        {selected.cities.has(city.name) && <TransportList city={city} />}
+      </ExpansionPanelDetails>
+    </styles.ExpansionPanel>
   );
 };
 

@@ -29,7 +29,7 @@ function List({ user, selected }) {
     return total;
   }
 
-  console.log('CITY', selected.cities);
+  console.log('CITY LIST', selected.cities);
 
   return (
     <styles.Container>

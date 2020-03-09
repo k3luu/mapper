@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
 import MuiExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import MuiExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Checkbox from '@material-ui/core/Checkbox';
+import MuiCheckbox from '@material-ui/core/Checkbox';
 import MuiFormControlLabel from '@material-ui/core/FormControlLabel';
 
 export const ExpansionPanel = withStyles({
@@ -53,7 +53,20 @@ export const FormControlLabel = withStyles(theme => ({
   }
 }))(MuiFormControlLabel);
 
-export const Container = styled.div`
-  margin: 20px 0;
-  padding: 10px;
+export const Checkbox = withStyles(theme => ({
+  colorPrimary: {
+    color: '#235789',
+    '&$checked': {
+      color: '#235789'
+    }
+  }
+}))(MuiCheckbox);
+
+export const Container = styled.div``;
+
+export const MainLabel = styled.div``;
+
+export const Sublabel = styled.div`
+  font-size: 12px;
+  font-style: italic;
 `;
