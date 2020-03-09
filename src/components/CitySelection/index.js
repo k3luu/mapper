@@ -82,9 +82,9 @@ const CitySelection = ({
                 selected.cities.size === user.num_cities &&
                 !selected.cities.has(city.name)
               }
+              inputProps={{ ...{ 'data-testid': city.id } }}
             />
           }
-          // label={`${city.name} - ${city.distance} miles away`}
           label={
             <>
               <styles.MainLabel>{city.name}</styles.MainLabel>
