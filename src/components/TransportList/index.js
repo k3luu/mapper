@@ -45,21 +45,15 @@ const TransportList = ({
     const cityName = e.target.name;
 
     let newTransportList = new Map(selected.transportByCityName);
-    // let newTransportByType = new Map(selected.transportByType);
-
-    // if (newTransportList.has(cityName)) {
-    //   let cityOldTransport = newTransportList.get(cityName);
-
-    //   newTransportByType.set(cityOldTransport.type, {
-    //     ...cityOldTransport,
-    //     city: ''
-    //   });
-    // }
 
     let transportOption = Transport.filter(p => p.type === value)[0];
     let transportTypeUsed = false;
 
     newTransportList.set(cityName, transportOption);
+    // newTransportList.set(cityName, {
+    //   ...transportOption,
+    //   unit: // decrement unit
+    // });
 
     for (let [key, value] of selected.transportByCityName) {
       if (value.type === transportOption.type && key !== city.name) {
@@ -67,18 +61,8 @@ const TransportList = ({
       }
     }
 
-    // if (newTransportByType.has(value)) {
-    // } else {
-    //   newTransportByType.set(value, {
-    //     ...transportOption,
-    //     mileageLeft: transportOption.max_distance - city.distance,
-    //     city: city.name
-    //   });
-    // }
-
     changeUserHasResources(!transportTypeUsed);
     updateSelectedTransportsByCity(newTransportList);
-    // updateSelectedTransportsByType(newTransportByType);
   }
 
   /**
